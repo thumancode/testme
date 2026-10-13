@@ -1,10 +1,12 @@
 name: Render Hadith Video (Remotion + FFmpeg)
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
     inputs:
       audio_url:
-        description: 'Optional direct URL for audio.mp3 (Google Drive direct link)'
+        description: 'Optional direct URL for audio.mp3'
         required: false
         default: ''
 
@@ -20,7 +22,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          # cache removed - package-lock.json not required
 
       - name: Install FFmpeg
         run: |
@@ -29,29 +30,22 @@ jobs:
           ffmpeg -version
 
       - name: Install dependencies
-        run: |
-          npm install --no-audit --no-fund
+        run: npm install --no-audit --no-fund
 
       - name: Ensure Remotion browser
         run: npx remotion browser ensure
 
-      - name: Optional - Download audio from URL
+      - name: Optional - Download audio
         if: ${{ inputs.audio_url != '' }}
         run: |
           curl -L -o audio.mp3 "${{ inputs.audio_url }}"
           mkdir -p public
           cp audio.mp3 public/audio.mp3
-          ls -lh audio.mp3
 
-      - name: Render 4K 9:16 Video (2160x3840)
+      - name: Render 4K 9:16 Video
         run: |
           mkdir -p out
-          npx remotion render Root.tsx HadithStory out/hadith-4k-9-16.mp4 --codec=h264 --crf=18 --width=2160 --height=3840 --concurrency=2 --image-format=jpeg --overwrite
-
-      - name: Verify with ffprobe
-        run: |
-          ls -lh out/
-          ffprobe -v error -show_entries stream=width,height,duration,codec_name -of default=noprint_wrappers=1 out/hadith-4k-9-16.mp4 || true
+          npx remotion render index.tsx HadithStory out/hadith-4k-9-16.mp4 --codec=h264 --crf=18 --width=2160 --height=3840 --concurrency=2 --image-format=jpeg --overwrite
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -59,4 +53,3 @@ jobs:
           name: hadith-video-4k-9-16
           path: out/hadith-4k-9-16.mp4
           retention-days: 14
-          compression-level: 0
