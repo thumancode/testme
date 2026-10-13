@@ -1,0 +1,21 @@
+{
+  "name": "hadith-motion",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "remotion studio",
+    "build": "remotion render Root.tsx HadithStory out/hadith-4k.mp4 --codec=h264 --width=2160 --height=3840",
+    "render": "remotion render Root.tsx HadithStory out/hadith-4k.mp4 --codec=h264"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "remotion": "^4.0.278",
+    "@remotion/cli": "^4.0.278",
+    "@remotion/media-utils": "^4.0.278"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.3",
+    "typescript": "^5.5.0"
+  }
+}
